@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle Financeiro Mobills</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #4a90e2;
+        }
+        .saldo {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .saldo div {
+            font-size: 18px;
+        }
+        .saldo div span {
+            font-weight: bold;
+            color: #333;
+        }
+        button {
+            width: 48%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        button.receita {
+            background-color: #4caf50;
+        }
+        button.despesa {
+            background-color: #f44336;
+        }
+        form {
+            display: none;
+            margin-top: 20px;
+        }
+        form.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        .transacoes {
+            margin-top: 20px;
+        }
+        .transacoes table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .transacoes th, .transacoes td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        .transacoes th {
+            background-color: #f5f5f5;
+            color: #555;
+        }
+        .transacoes td button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Mobills Finance</h1>
+        <div class="saldo">
+            <div>Receitas: R$ <span id="total-receita">0.00</span></div>
+            <div>Despesas: R$ <span id="total-despesa">0.00</span></div>
+            <div>Saldo: R$ <span id="saldo-total">0.00</span></div>
+        </div>
+
+        <div class="controls">
+            <button class="receita" id="btn-receita">Adicionar Receita</button>
+            <button class="despesa" id="btn-despesa">Adicionar Despesa</button>
+        </div>
+
+        <form id="form-finance">
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" placeholder="Ex: Salário, Compras..." required>
+
+            <label for="valor">Valor (R$)</label>
+            <input type="number" id="valor" placeholder="Ex: 200.00" required>
+
+            <label for="categoria">Categoria</label>
+            <select id="categoria" required>
+                <option value="Salário">Salário</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Transporte">Transporte</option>
+                <option value="Lazer">Lazer</option>
+                <option value="Outros">Outros</option>
+            </select>
+
+            <button type="submit" id="submit-btn"></button>
+        </form>
+
+        <div class="transacoes">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Descrição</th>
+                        <th>Valor (R$)</th>
+                        <th>Categoria</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-transacoes">
+                    <!-- Transações aparecerão aqui -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const btnReceita = document.getElementById('btn-receita');
+        const btnDespesa = document.getElementById('btn-despesa');
+        const formFinance = document.getElementById('form-finance');
+        const submitBtn = document.getElementById('submit-btn');
+        const listaTransacoes = document.getElementById('lista-transacoes');
+        const totalReceitaElem = document.getElementById('total-receita');
+        const totalDespesaElem = document.getElementById('total-despesa');
+        const saldoTotalElem = document.getElementById('saldo-total');
+
+        let saldoTotal = 0;
+        let totalReceita = 0;
+        let totalDespesa = 0;
+        let tipoTransacao = '';
+
+        // Função para abrir o formulário e definir o tipo de transação
+        function abrirFormulario(tipo) {
+            formFinance.classList.add('active');
+            tipoTransacao = tipo;
+            submitBtn.textContent = tipo === 'receita' ? 'Adicionar Receita' : 'Adicionar Despesa';
+        }
+
+        // Função para atualizar valores
+        function atualizarTotais() {
+            totalReceitaElem.textContent = totalReceita.toFixed(2);
+            totalDespesaElem.textContent = totalDespesa.toFixed(2);
+            saldoTotalElem.textContent = saldoTotal.toFixed(2);
+        }
+
+        // Evento de clique nos botões
+        btnReceita.addEventListener('click', () => abrirFormulario('receita'));
+        btnDespesa.addEventListener('click', () => abrirFormulario('despesa'));
+
+        // Evento de submissão do formulário
+        formFinance.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const descricao = document.getElementById('descricao').value;
+            const valor = parseFloat(document.getElementById('valor').value);
+            const categoria = document.getElementById('categoria').value;
+
+            // Cria a nova linha da transação
+            const novaLinha = document.createElement('tr');
+            novaLinha.innerHTML = `
+                <td>${descricao}</td>
+                <td>${valor.toFixed(2)}</td>
+                <td>${categoria}</td>
+                <td><button class="remover">Remover</button></td>
+            `;
+            listaTransacoes.appendChild(novaLinha);
+
+            // Atualiza o saldo e as receitas/despesas
+            if (tipoTransacao === 'receita') {
+                totalReceita += valor;
+                saldoTotal += valor;
+            } else {
+                totalDespesa += valor;
+                saldoTotal -= valor;
+            }
+
+            atualizarTotais();
+            formFinance.reset();
+            formFinance.classList.remove('active');
+        });
+
+        // Remoção de transações
+        listaTransacoes.addEventListener('click', function(event) {
+            if (event.target.classList.contains('remover')) {
+                const linha = event.target.parentNode.parentNode;
+                const valor = parseFloat(linha.children[1].textContent);
+                const categoria = linha.children[2].textContent;
+
+                // Atualizar os totais ao remover
+                if (categoria === 'Salário') {
+                    totalReceita -= valor;
+                    saldoTotal -= valor;
+                } else {
+                    totalDespesa -= valor;
+                    saldoTotal += valor;
+                }
+
+                atualizarTotais();
+                linha.remove();
+            }
+        });
+    </script>
+
+</body>
+</html>

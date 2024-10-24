@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Senhas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        .form-container {
+            margin: 20px auto;
+            max-width: 400px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        .form-container input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .form-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .form-container button:hover {
+            background-color: #218838;
+        }
+        .password-list {
+            margin-top: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        .password-list ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .password-list li {
+            background-color: #fff;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .password-list li button {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+        .password-list li button:hover {
+            background-color: #c82333;
+        }
+        .toggle-password {
+            display: flex;
+            align-items: center;
+        }
+        .toggle-password input {
+            width: auto;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Gerenciador de Senhas</h1>
+
+    <div class="form-container">
+        <h2>Adicionar Nova Conta</h2>
+        <label for="site-name">Nome do Site:</label>
+        <input type="text" id="site-name" placeholder="Digite o nome do site" required>
+        
+        <label for="login">Login:</label>
+        <input type="text" id="login" placeholder="Digite seu login" required>
+        
+        <label for="password">Senha:</label>
+        <input type="password" id="password" placeholder="Digite sua senha" required>
+
+        <div class="toggle-password">
+            <input type="checkbox" id="show-password" onclick="togglePassword()"> Mostrar senha
+        </div>
+        
+        <button onclick="savePassword()">Salvar Credenciais</button>
+    </div>
+
+    <div class="password-list">
+        <h2>Minhas Senhas Salvas</h2>
+        <ul id="password-list"></ul>
+    </div>
+
+    <script>
+        // Função para
+        // Função para exibir ou ocultar a senha
+        function togglePassword() {
+            const passwordField = document.getElementById('password');
+            const showPasswordCheckbox = document.getElementById('show-password');
+            
+            if (showPasswordCheckbox.checked) {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
+
+        // Função para salvar as credenciais
+        function savePassword() {
+            const siteName = document.getElementById('site-name').value;
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+            
+            if (siteName === '' || login === '' || password === '') {
+                alert('Por favor, preencha todos os campos.');
+                return;
+            }
+
+            const passwordList = document.getElementById('password-list');
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <strong>${siteName}</strong><br>
+                Login: ${login} <br>
+                Senha: <span>${password}</span>
+                <button onclick="removePassword(this)">Excluir</button>
+            `;
+
+            passwordList.appendChild(listItem);
+
+            // Limpa os campos do formulário
+            document.getElementById('site-name').value = '';
+            document.getElementById('login').value = '';
+            document.getElementById('password').value = '';
+        }
+
+        // Função para remover uma senha da lista
+        function removePassword(element) {
+            const listItem = element.parentElement;
+            listItem.remove();
+        }
+    </script>
+
+</body>
+</html>
