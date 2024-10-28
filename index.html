@@ -1,39 +1,36 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Desenvolvimento Pessoal</title>
-    <link rel="stylesheet" href="styles.css"> <!-- Link para o CSS -->
+    <title>Conexão com Google Sheets</title>
 </head>
 <body>
+    <h1>Dados da Planilha</h1>
+    <div id="dados"></div>
+
+    <script>
+    const URL_API = 'https://script.google.com/macros/s/AKfycbyobkTWXRlyaSsWlxZrNkYvyINhhDk8PbUS-QwejgPxAK8oFjyYOo4gFaZKyaTBK-03Kg/exec';
 
 
-    <div class="menu">
-      
-        <ul>
-            <li><a href="#quizz">Quiz</a></li>
-            <li><a href="#outros">Outros Projetos</a></li>
-            <li><a href="#recursos">Recursos</a></li>
-            <!-- Adicione mais itens de menu aqui, se necessário -->
-        </ul>
-    </div>
+        async function carregarDados() {
+            try {
+                const response = await fetch(URL_API);
+                const dados = await response.json();
 
-    <div id="quiz" class="grid-item" onclick="location.href='novaversao.html'">
-        <img src="quiz3.png" alt="Imagem do Quiz"> 
-       
-    </div>
-    <div id="quiz" class="grid-item" onclick="location.href='gastos.html'">
-        <img src="senha.png" alt="Imagem ssdo Quiz"> 
-    </div>
-    
+                // Exibindo os dados
+                document.getElementById('dados').innerHTML = dados
+                    .map(item => `<p>Nome: ${item.nome}, Idade: ${item.idade}, Cidade: ${item.cidade}</p>`)
+                    .join('');
+            } catch (error) {
+                console.error('Erro ao carregar dados:', error);
+                document.getElementById('dados').innerHTML = 'Erro ao carregar dados.';
+            }
+        }
 
-    <div id="outros" class="grid-item">
-        <h2>Outros Projetos</h2>
-        <p>Acesse outros recursos para seu desenvolvimento pessoal.</p>
-   
-    </div>
-
-    <script src="script.js"></script> <!-- Link para o JavaScript -->
+        carregarDados();
+    </script>
 </body>
 </html>
+
